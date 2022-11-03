@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<link rel="stylesheet" href="styles.css" />
+	</head>
+	<body>
+		<canvas id="anim"></canvas>
+	</body>
+
+	<script>
+		const html = document.documentElement
+		const canvas = document.getElementById('anim')
+		const context = canvas.getContext('2d')
+
+		const frameCount = xxx // Number of frames (images) in the sequence
+		const currentFrame = index =>
+			`sequence/${index.toString().padStart(4, '0')}.jpg`
+
+		const preloadImages = () => {
+			for (let i = 0; i < frameCount; i++) {
+				const img = new Image()
+				img.src = currentFrame(i)
+			}
+		}
+
+		const img = new Image()
+		img.src = currentFrame(0)
+		canvas.width = 720
+		canvas.height = 1280
+		img.onload = () => {
+			context.drawImage(img, 0, 0)
+		}
+
+		const updateImage = index => {
+			img.src = currentFrame(index)
+			context.drawImage(img, 0, 0)
+		}
+
+		window.addEventListener('scroll', () => {
+			const scrollTop = html.scrollTop
+			const maxScrollTop = html.scrollHeight - window.innerHeight
+			const scrollProgress = scrollTop / maxScrollTop
+			const frameIndex = Math.min(
+				frameCount - 1,
+				Math.ceil(scrollProgress * frameCount),
+			)
+
+			requestAnimationFrame(() => updateImage(frameIndex + 1))
+		})
+
+		preloadImages()
+	</script>
+</html>
